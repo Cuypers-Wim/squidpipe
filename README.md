@@ -3,9 +3,9 @@
 This repository contains a Nextflow pipeline for processing FASTQ files, running Kraken2 for taxonomic classification, extracting relevant reads, and performing mapping and coverage analysis. The pipeline is designed for multiplexed nanopore runs, specifically tailored for viral detection.
 
 ## Table of Contents
-- [Installation](#installation)
+- [Installation](##Installation)
 - [Usage](#usage)
-- [Pipeline Processes](#about)
+- [Pipeline Processes](##About)
 
 
 ## Installation
@@ -60,17 +60,17 @@ The pipeline outputs mapping statistics for the reference genome or the best mat
 
 ### Descriptions of Key Processes:
 
-- CONCATENATE_FASTQ: Merges all FASTQ files in a barcode folder into a single FASTQ file for downstream analysis.
-- RUNKRAKEN2: Executes Kraken2 on the concatenated FASTQ files for taxonomic classification, generating reports and extracting read IDs.
-- SUBSET_FASTQ: Extracts reads of interest from the concatenated FASTQ files based on the Kraken2 classification results.
-- RETRIEVE_GENOMEREFS: Downloads and formats reference genomes based on specified Taxon IDs.
-- MAP_READS: Aligns the subsetted FASTQ reads to the reference genomes using minimap2 (to remove false-positives), followed by sorting the output BAM file.
-- BAM_PROCESSING: Marks duplicates in the BAM file and creates an index for efficient access.
-- MAPPING_STATS_ALL: Generates mapping statistics for the BAM files, including flagstat and idxstats reports.
-- EXTRACT_READIDS: Filters the BAM file to retain reads that map to the target species and extracts the corresponding read IDs.
-- SAMTOOLS_DEPTH: Computes the depth of coverage across the reference genomes using the filtered BAM files.
-- DEPTH_OF_COVERAGE: Analyzes the depth of coverage data to calculate coverage statistics, outputting the results in CSV format.
-- SUBSET_POD5: Filters POD5 files to retain only the raw signals/squiggles corresponding to the extracted read IDs.
+- `CONCATENATE_FASTQ`: Merges all FASTQ files in a barcode folder into a single FASTQ file for downstream analysis.
+- `RUNKRAKEN2`: Executes Kraken2 on the concatenated FASTQ files for taxonomic classification, generating reports and extracting read IDs.
+- `SUBSET_FASTQ`: Extracts reads of interest from the concatenated FASTQ files based on the Kraken2 classification results.
+- `RETRIEVE_GENOMEREFS`: Downloads and formats reference genomes based on specified Taxon IDs.
+- `MAP_READS`: Aligns the subsetted FASTQ reads to the reference genomes using minimap2 (to remove false-positives), followed by sorting the output BAM file.
+- `BAM_PROCESSING`: Marks duplicates in the BAM file and creates an index for efficient access.
+- `MAPPING_STATS_ALL`: Generates mapping statistics for the BAM files, including flagstat and idxstats reports.
+- `EXTRACT_READIDS`: Filters the BAM file to retain reads that map to the target species and extracts the corresponding read IDs.
+- `SAMTOOLS_DEPTH`: Computes the depth of coverage across the reference genomes using the filtered BAM files.
+- `DEPTH_OF_COVERAGE`: Analyzes the depth of coverage data to calculate coverage statistics, outputting the results in CSV format.
+- `SUBSET_POD5`: Filters POD5 files to retain only the raw signals/squiggles corresponding to the extracted read IDs.
 
 Each process is designed to handle specific aspects of the analysis workflow, making the pipeline flexible and easy to extend.
 
