@@ -17,6 +17,9 @@ This repository contains a Nextflow pipeline for processing FASTQ files, running
 - [seqtk](https://github.com/lh3/seqtk)
 - [minimap2](https://github.com/lh3/minimap2)
 - [samtools](http://www.htslib.org/)
+- [pandas](https://pandas.pydata.org/)
+
+Note that this software does not need to be installed when running the pipeline with the default conda option; an `vmp_env.yaml` has been provided to run the pipeline.
 
 ### Clone the Repository
 ```bash
