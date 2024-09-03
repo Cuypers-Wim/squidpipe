@@ -1,4 +1,4 @@
-# vmp_sqb: a viral metagenomics pipeline for squidbase
+# squidpipe: a viral metagenomics pipeline for squidbase
 
 This repository contains a Nextflow pipeline for processing FASTQ files, running Kraken2 for taxonomic classification, extracting relevant reads, and performing mapping and coverage analysis. The pipeline is designed for multiplexed nanopore runs, specifically tailored for viral detection.
 
@@ -23,8 +23,8 @@ Note that this software does not need to be installed when running the pipeline 
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/Cuypers-Wim/vmp_sqb.git
-cd vmp_sqb
+git clone https://github.com/Cuypers-Wim/squidpipe.git
+cd squidpipe
 ```
 
 ### Configure the Pipeline
@@ -32,7 +32,7 @@ Edit the nextflow.config file to point to your data directories and set any nece
 
 ## Usage 
 ```bash
-nextflow run main.nf 
+nextflow run squidpipe.nf 
 ```
 
 Running this pipeline generates a folder named `results`, which contains the following subdirectories:
