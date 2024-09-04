@@ -17,6 +17,7 @@ modules/nextflow/work/
 **/out/*
 tmp/*
 work/*
+results/*
 nextflow.eml
 nextflow.iml
 Vagrantfile
