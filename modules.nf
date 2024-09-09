@@ -297,15 +297,13 @@ process SUBSET_POD5 {
 
     script:
     """
-    pod5 filter ${pod5_reads}/${meta.folder} --output ${meta.taxid}_${meta.name}.filtered.pod5 --ids ${virus_ids} --missing-ok
-
     # Check if there are any subfolders 
-    if find "${pod5_reads}" -mindepth 1 -type d | read; then
+    if find ${pod5_reads} -mindepth 1 -type d | read; then
         # Subfolders are present, run this command
-        pod5 filter "${pod5_reads}/${meta.folder}" --output "${meta.taxid}_${meta.name}.filtered.pod5" --ids "${virus_ids}" --missing-ok
+        pod5 filter ${pod5_reads}/${meta.folder} --output ${meta.taxid}_${meta.name}.filtered.pod5 --ids ${virus_ids} --missing-ok
     else
         # No subfolders present, just query all files
-        pod5 filter "${pod5_reads}" --output "${meta.taxid}_${meta.name}.filtered.pod5" --ids "${virus_ids}" --missing-ok
+        pod5 filter ${pod5_reads} --output ${meta.taxid}_${meta.name}.filtered.pod5 --ids ${virus_ids} --missing-ok
     fi
 
     """
