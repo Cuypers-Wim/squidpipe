@@ -69,8 +69,6 @@ process SUBSET_FASTQ {
 
     conda params.conda_envs.default_env
 
-    publishDir "results/reads", pattern: "*.fastq.gz"
-
     input:
     tuple path(reads), path(virus_ids), val(meta)
 
@@ -80,7 +78,7 @@ process SUBSET_FASTQ {
     script:
     """
     seqtk subseq ${reads} ${virus_ids} > ${meta.name}.fastq
-    pigz ${meta.name}.fastq
+    pigz -p ${task.cpus} ${meta.name}.fastq
     """
 
 }
@@ -95,7 +93,8 @@ process RETRIEVE_GENOMEREFS {
 
     conda params.conda_envs.default_env
 
-    publishDir "results/references", pattern: "*.fasta"
+    publishDir "results/references", pattern: "*.fasta", mode: 'copy', overwrite: false
+    publishDir "results/references", pattern: "*.log", mode: 'copy', overwrite: false
 
     input:
     tuple path(subsetted_fastqs), val(meta)
@@ -170,8 +169,8 @@ process MAPPING_STATS_ALL {
 
     conda params.conda_envs.default_env
 
-    publishDir "results/mapping", pattern: "*.flagstat.txt"
-    publishDir "results/mapping", pattern: "*.idxstats.txt"
+    publishDir "results/mapping", pattern: "*.flagstat.txt", mode: 'copy', overwrite: false
+    publishDir "results/mapping", pattern: "*.idxstats.txt", mode: 'copy', overwrite: false
     
     input:
     tuple path (bam_dedup), path (bam_dedup_index), val(meta)
@@ -198,8 +197,9 @@ process EXTRACT_READIDS {
 
     conda params.conda_envs.default_env
 
-    publishDir "results/mapping", pattern: "*_filtered.bam"
-    publishDir "results/mapping", pattern: "*_final_read_ids.txt"
+    publishDir "results/mapping", pattern: "*_filtered.bam", mode: 'copy', overwrite: false
+    publishDir "results/mapping", pattern: "*_final_read_ids.txt", mode: 'copy', overwrite: false
+    publishDir "results/reads", pattern: "*.fastq.gz", mode: 'copy', overwrite: false
 
     input:
     tuple path (bam_dedup), path (bam_dedup_index), val(meta)
@@ -207,6 +207,7 @@ process EXTRACT_READIDS {
     output:
     tuple path("*_filtered.bam"), val(meta), emit: 'tuple_bam_meta'
     tuple path("*_final_read_ids.txt"), val(meta), emit: 'tuple_ids_meta'
+    tuple path("*.fastq.gz"), val(meta), emit: 'filtered_tp_reads'
 
     script:
     """
@@ -215,10 +216,14 @@ process EXTRACT_READIDS {
     REGION=\$(samtools view -h ${bam_dedup} | \
     grep "^@SQ" | grep "${meta.taxid}_${meta.name}" | cut -f2 | sed 's/SN://g')
 
-    #Use REGION to filter bam wile retaining header
+    # use REGION to filter bam wile retaining header
     
     samtools view -b -h -F 256 -F 4 ${bam_dedup} -o ${meta.taxid}_${meta.name}_filtered.bam \$REGION
     samtools view ${meta.taxid}_${meta.name}_filtered.bam | cut -f 1 > ${meta.taxid}_${meta.name}_final_read_ids.txt
+    
+    # make final fastq with true positives from bam to be pulished 
+    samtools fastq -@ ${task.cpus} ${meta.taxid}_${meta.name}_filtered.bam > ${meta.taxid}_${meta.name}.fastq
+    pigz -p ${task.cpus} ${meta.taxid}_${meta.name}.fastq
     """
 }
 
@@ -232,7 +237,7 @@ process SAMTOOLS_DEPTH {
 
     conda params.conda_envs.default_env
 
-    publishDir "results/mapping", pattern: "*.depth"
+    publishDir "results/mapping", pattern: "*.depth", mode: 'copy', overwrite: false
 
     input:
     tuple path(filtered_bam), val(meta)
@@ -256,7 +261,7 @@ process DEPTH_OF_COVERAGE {
 
     conda params.conda_envs.default_env
 
-    publishDir "results/mapping", pattern: "*.csv"
+    publishDir "results", pattern: "*.csv", mode: 'copy', overwrite: false
 
     input:
     path(depthFile)
@@ -281,7 +286,7 @@ process SUBSET_POD5 {
 
     conda params.conda_envs.default_env
 
-    publishDir "results/pod5", pattern: "*.filtered.pod5"
+    publishDir "results/pod5", pattern: "*.filtered.pod5", mode: 'copy', overwrite: false
 
     input:
     path pod5_reads

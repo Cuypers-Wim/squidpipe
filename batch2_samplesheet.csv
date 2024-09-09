@@ -1,5 +1,5 @@
 barcode01,CHIKV-2,37124
-barcode02,Denv1 -6,11053
+barcode02,Denv1-6,11053
 barcode03,Denv2-8,11060
 barcode04,Denv3-11,11069
 barcode05,Denv4-13,408871
@@ -20,5 +20,5 @@ barcode19,HIV-61,11676
 barcode20,HIV-62,11676
 barcode21,MPOX-66,10244
 barcode22,DENV3-68,11069
-barcode23,water,2697049
-barcode24,LMD,2697049
+barcode23,negCont_water,2697049
+barcode24,posCont_LMD,2681611
