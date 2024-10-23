@@ -75,5 +75,8 @@ The pipeline outputs mapping statistics for the reference genome or the best mat
 - `DEPTH_OF_COVERAGE`: Analyzes the depth of coverage data to calculate coverage statistics, outputting the results in CSV format.
 - `SUBSET_POD5`: Filters POD5 files to retain only the raw signals/squiggles corresponding to the extracted read IDs.
 
-Each process is designed to handle specific aspects of the analysis workflow, making the pipeline flexible and easy to extend.
+A graphic overview can be found here: 
+
+![image](https://github.com/user-attachments/assets/de9e3d25-ca98-4e91-b296-6755e1865b42)
+
 
