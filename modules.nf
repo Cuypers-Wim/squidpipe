@@ -29,13 +29,16 @@ process RUNKRAKEN2 {
     label 'process_low'
     conda params.conda_envs.default_env
 
+    publishDir "results/kraken2", pattern: "*_krakenReport.txt", mode: 'copy', overwrite: false
+    
     tag "Kraken on $meta.name"
 
     input:
     tuple path(reads_combined), val(meta)
 
     output:
-    tuple path(reads_combined), path("*_ids.txt"), val(meta), optional: true
+    path "*_krakenReport.txt", emit: 'kraken_report'
+    tuple path(reads_combined), path("*_ids.txt"), val(meta), optional: true, emit: 'reads_ids_meta'
 
     script:
     """
@@ -44,6 +47,7 @@ process RUNKRAKEN2 {
         --db ${params.databases.kraken_db} \
         --threads ${task.cpus} \
         --gzip-compressed \
+        --minimum-hit-groups 1 \
         --output ${meta.name}_krakenReport.txt \
         ${reads_combined}
 
@@ -129,9 +133,9 @@ process MAP_READS {
 
     script:
     """
-    minimap2 -ax map-ont -t ${task.cpus} ${fasta} ${subsetted_fastq} | \
-    samtools sort -l 0 -m 1G -O BAM -@ ${task.cpus} -o ${meta.name}_${meta.taxid}.sorted.bam
-
+    minimap2 -ax map-ont -t ${task.cpus} ${fasta} ${subsetted_fastq} > mapped.sam
+    samtools view -@ ${task.cpus} -b mapped.sam -o mapped.bam
+    samtools sort -l 0 -m 1G -O BAM -@ ${task.cpus} mapped.bam -o ${meta.name}_${meta.taxid}.sorted.bam
     """
 
 }
