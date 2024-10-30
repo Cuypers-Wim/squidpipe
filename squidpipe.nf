@@ -55,7 +55,7 @@ workflow {
     concatenate_fastq_results = CONCATENATE_FASTQ(params.fastq_dir, ch_csv_lines)
     kraken_results = RUNKRAKEN2(concatenate_fastq_results)
 
-    fastq_subset_results = SUBSET_FASTQ(kraken_results)
+    fastq_subset_results = SUBSET_FASTQ(kraken_results.reads_ids_meta)
     // subset fastq emits a tuple of subsetted reads, and virus ids
 
     // retrieve genome references
