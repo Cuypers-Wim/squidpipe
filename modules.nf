@@ -110,7 +110,7 @@ process RETRIEVE_GENOMEREFS {
     """
     genome_retriever.py --taxon_id ${meta.taxid} --name ${meta.name} -o .
     
-    awk -v add="${meta.taxid}_${meta.name}_" '/^>/ {print ">" add substr(\$0, 2); next} {print}' *.fna > ${meta.name}.fasta
+    awk -v add="${meta.taxid}_" '/^>/ {print ">" add substr(\$0, 2); next} {print}' *.fna > ${meta.name}.fasta
     """
 }
 
@@ -244,7 +244,7 @@ process EXTRACT_READIDS {
     # extract the correct region name. 
 
     REGION=\$(samtools view -h ${bam_dedup} | \
-    grep "^@SQ" | grep "${meta.taxid}_${meta.name}" | cut -f2 | sed 's/SN://g')
+    grep "^@SQ" | grep "${meta.taxid}" | cut -f2 | sed 's/SN://g')
 
     # use REGION to filter bam wile retaining header
     
@@ -277,7 +277,7 @@ process SAMTOOLS_DEPTH {
     
     script:
     """
-    samtools depth -aa ${filtered_bam} | grep "${meta.taxid}_${meta.name}" > ${meta.taxid}_${meta.name}.depth
+    samtools depth -aa ${filtered_bam} | grep "${meta.taxid}" > ${meta.taxid}_${meta.name}.depth
     """
 
 }
