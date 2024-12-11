@@ -277,7 +277,7 @@ process SAMTOOLS_DEPTH {
     
     script:
     """
-    samtools depth -aa ${filtered_bam} | grep "${meta.taxid}" > ${meta.taxid}_${meta.name}.depth
+    samtools depth -aa ${filtered_bam} | grep "${meta.taxid}_" | sed 's/^/${meta.name}_/' > ${meta.taxid}_${meta.name}.depth
     """
 
 }
