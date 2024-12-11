@@ -26,6 +26,7 @@ include { CONCATENATE_FASTQ     } from './modules.nf'
 include { RUNKRAKEN2            } from './modules.nf'
 include { SUBSET_FASTQ          } from './modules.nf'
 include { RETRIEVE_GENOMEREFS   } from './modules.nf'
+include { DEDUPLICATE_REFERENCE } from './modules.nf'
 include { MAP_READS             } from './modules.nf'
 include { BAM_PROCESSING        } from './modules.nf'
 include { MAPPING_STATS_ALL     } from './modules.nf'
@@ -76,8 +77,9 @@ workflow {
     
     ch_refGenome = ch_all_refs.collectFile(name: 'combined_reference.fna')
 
-    // first() will convert ch_refGenome to a value channel
-    ch_refGenome_value = ch_refGenome.first()
+    // deduplicate and  to a value channel convert ch_refGenome to a value channel
+
+    ch_refGenome_value = DEDUPLICATE_REFERENCE(ch_refGenome).first()
 
     // map reads per sample to the conbined reference
 

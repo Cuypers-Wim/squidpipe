@@ -114,6 +114,32 @@ process RETRIEVE_GENOMEREFS {
     """
 }
 
+
+
+/*
+ * Deduplicate reference
+ */
+
+
+process DEDUPLICATE_REFERENCE {
+
+    label 'process_low'
+
+    conda params.conda_envs.default_env
+
+    input:
+    path fasta
+
+    output:
+    path 'unique.fasta'
+
+    script:
+    """
+    seqkit rmdup -n ${fasta} > unique.fasta
+    """
+
+}
+
 /*
  * Map reads and perform samtools sort on the resulting bam file
  */
