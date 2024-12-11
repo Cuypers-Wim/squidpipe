@@ -1,5 +1,9 @@
 # squidpipe: a viral metagenomics pipeline for squidbase
 
+<div align="center">
+  <img src="squidpipe.png" alt="Description of Image" width="300">
+</div>
+
 This repository contains a Nextflow pipeline for processing FASTQ files, running Kraken2 for taxonomic classification, extracting relevant reads, and performing mapping and coverage analysis. The pipeline is designed for multiplexed nanopore runs, specifically tailored for viral detection.
 
 ## Table of Contents
