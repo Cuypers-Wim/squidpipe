@@ -3,3 +3,13 @@
 - tests
 - rerun squidbase dataset
 - run also on plasmodium
+
+
+# support for squidbase output CSV
+
+Columns required: 
+
+
+
+# docker container support (+ apptainer support?)
+
