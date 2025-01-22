@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 
-log.info """\
+/*
 
     S Q U I D P I P E - N F 
     ===================================
@@ -15,8 +15,9 @@ log.info """\
     The pipeline is modular and scalable, supporting the integration of custom reference genomes 
     and POD5 file processing.
 
-    """
-    .stripIndent(true)
+
+*/
+
 
 nextflow.enable.dsl=2
 
