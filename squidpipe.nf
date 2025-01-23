@@ -39,7 +39,21 @@ include { SUBSET_POD5           } from './modules.nf'
 // workflow
 
 workflow {
-    ch_csv_lines = Channel.fromPath(params.csv_file)
+    
+    
+    workflow {
+    if( params.csvMeta )
+        ch_csv_lines = Channel.fromPath(params.csv_file)
+                        .splitCsv(header: false)
+                        .map { row ->
+                            meta = [
+                                folder: row[0],
+                                name: row[1],
+                                taxid: row[2]
+                            ]
+                        }
+    else
+        ch_csv_lines = Channel.fromPath(params.csv_file)
                         .splitCsv(header: false)
                         .map { row ->
                             meta = [
@@ -49,11 +63,13 @@ workflow {
                             ]
                         }
 
-    // val(meta)
-    // meta.folder
-    // meta.name
-    // meta.taxid                
-                        
+                        // produces:
+                            // val(meta)
+                            // meta.folder
+                            // meta.name
+                            // meta.taxid   
+}
+
     concatenate_fastq_results = CONCATENATE_FASTQ(params.fastq_dir, ch_csv_lines)
     kraken_results = RUNKRAKEN2(concatenate_fastq_results)
 
@@ -107,13 +123,9 @@ workflow {
     
     depth_of_coverage_output = DEPTH_OF_COVERAGE(ch_concat_deptFile)
 
-    ///if (params.pod5_split) {
-        // Run POD5 splitting
-        // Map to extract only the read_ids for SUBSET_POD5
-        
+    if (params.pod5_split) {
     split_pod5_results = SUBSET_POD5(params.pod5_dir, extract_readids_output.tuple_ids_meta)
-        
-    ///    }        
+    }        
 
 }
 
