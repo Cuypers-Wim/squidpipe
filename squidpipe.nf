@@ -39,17 +39,23 @@ include { SUBSET_POD5           } from './modules.nf'
 // workflow
 
 workflow {
-    
-    
-    workflow {
     if( params.csvMeta )
         ch_csv_lines = Channel.fromPath(params.csv_file)
-                        .splitCsv(header: false)
+                        .splitCsv(header: true, sep: ";")
                         .map { row ->
                             meta = [
-                                folder: row[0],
-                                name: row[1],
-                                taxid: row[2]
+                                folder: "${row.filename}",
+                                name: "${row.species_name}",
+                                taxid: "${row.pathogen_taxid}",
+                                year: "${row.year_of_isolation}",
+                                country: "${row.country_of_isolation}",
+                                ori: "${row.geographic_origin}",
+                                strain: "${row.strain_lineage}",
+                                source: "${row.source_id}",
+                                host: "${row.host_ncbi_taxid}",
+                                labid: "${row.internal_lab_id}",
+                                diagMethod: "${row.diagnostic_method_id}",
+                                remarks: "${row.remarks}"
                             ]
                         }
     else
@@ -62,13 +68,11 @@ workflow {
                                 taxid: row[2]
                             ]
                         }
-
                         // produces:
                             // val(meta)
                             // meta.folder
                             // meta.name
-                            // meta.taxid   
-}
+                            // meta.taxid
 
     concatenate_fastq_results = CONCATENATE_FASTQ(params.fastq_dir, ch_csv_lines)
     kraken_results = RUNKRAKEN2(concatenate_fastq_results)
@@ -125,12 +129,17 @@ workflow {
 
     if (params.pod5_split) {
     split_pod5_results = SUBSET_POD5(params.pod5_dir, extract_readids_output.tuple_ids_meta)
-    }        
 
-}
+    split_pod5_results.collectFile(name: 'final_metadata.csv', newLine: true, storeDir: 'results/')
 
+    } 
+
+}       
 
 // ToDo
 //
+// final metadatacsv file should consist of pod5 filename and all metadata
+//
 // Switch to nf-core modules - better for portability
+// docker - apptainer
 // Make a nice schema for visual depiction of the pipeline, or print the DAG?

@@ -324,6 +324,7 @@ process SUBSET_POD5 {
 
     output:
     path("*.filtered.pod5")
+    val(meta)
 
     script:
     """
