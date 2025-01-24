@@ -1,4 +1,4 @@
-﻿filename;species_name;pathogen_taxid;year_of_isolation;country_of_isolation;geographic_origin;strain_lineage;source_id;host_ncbi_taxid;internal_lab_id;diagnostic_method_id;remarks
+﻿filename;species_name;species_taxid;year_of_isolation;country_of_isolation;geographic_origin;strain_lineage;source_id;host_taxid;internal_lab_id;diagnostic_method_id;remarks
 barcode01;DENV;11053;2014;NA;NA;ECSA;NA;NA;NA;NA;ITM collection
 barcode02;HIV;11676;2015;BE;NI;ECSA;NA;NA;NA;NA;ITM collection
 barcode03;ZIKV;64320;11053;2015;BE;ID;NA;NA;NA;NA;NA;ITM collection
