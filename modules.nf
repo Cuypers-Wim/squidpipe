@@ -323,8 +323,7 @@ process SUBSET_POD5 {
     tuple path(virus_ids), val(meta)
 
     output:
-    path("*.filtered.pod5")
-    val(meta)
+    tuple path("*.filtered.pod5"), val(meta)
 
     script:
     """
