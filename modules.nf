@@ -51,7 +51,7 @@ process RUNKRAKEN2 {
         --output ${meta.species_name}_krakenReport.txt \
         ${reads_combined}
 
-        awk -F'\\t' -v taxID="${meta.species_taxid}" '\$1 == "C" && \$3 == taxid {print \$2}' ${meta.species_name}_krakenReport.txt > ${meta.species_name}_ids.txt.temp
+        awk -F'\\t' -v taxID="${meta.species_taxid}" '\$1 == "C" && \$3 == taxID {print \$2}' ${meta.species_name}_krakenReport.txt > ${meta.species_name}_ids.txt.temp
 
     # Only move the tmp file to the final location if it's not empty
     if [ -s ${meta.species_name}_ids.txt.temp ]; then

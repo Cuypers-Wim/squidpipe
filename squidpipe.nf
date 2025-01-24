@@ -129,25 +129,17 @@ workflow {
 
     if (params.pod5_split) {
     split_pod5_results = SUBSET_POD5(params.pod5_dir, extract_readids_output.tuple_ids_meta)
-
-    //split_pod5_results.collectFile(name: 'final_metadata.csv', newLine: true, storeDir: 'results/')
-    
-    //split_pod5_results
-    //.map { file, meta -> "${file.getName()},${meta}" }  // Format as CSV
-    //.collectFile(name: 'final_metadata.csv', newLine: true, storeDir: 'results/')
-
     split_pod5_results
     .map { file, meta -> 
-        def headers = "filename," + meta.keySet().join(",")  // Add "filename" as the first header
-        def values = "${file.getName()}," + meta.values().join(",")
+        def headers = "filename," + meta.keySet().drop(1).join(",")  // Add "filename" as the first header
+        def values = "${file.getName()}," + meta.values().drop(1).join(",")
         return [headers, values]
     }
     .flatten()
-    .unique()
-    .collectFile(name: 'final_metadata.csv', newLine: true, storeDir: 'results/')
+    .unique().view()
+    .collectFile(name: 'final_metadata.csv', newLine: true, storeDir: 'results/', sort: false)
 
-
-    } 
+    }
 
 }       
 
