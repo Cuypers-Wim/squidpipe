@@ -18,8 +18,11 @@ COPY --from=builder /opt/conda /opt/conda
 # Set the PATH to include the Conda environment
 ENV PATH="/opt/conda/bin:$PATH"
 
-# Activate the environment by default (replace 'your_env_name' with actual name)
-SHELL ["conda", "run", "-n", "squidpipe_env", "/bin/bash", "-c"]
+# Initialize Conda and add environment activation to bashrc
+RUN conda init && echo "conda activate viral_metagenomics_env" >> ~/.bashrc
 
-# Set a default command (optional, replace as needed)
-CMD ["conda", "env list"]
+# Use default shell (no need for exec bash in SHELL directive)
+SHELL ["bash", "-c"]
+
+# Start an interactive shell when container runs
+CMD ["bash"]
