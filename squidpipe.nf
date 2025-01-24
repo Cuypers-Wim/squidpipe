@@ -136,7 +136,7 @@ workflow {
         return [headers, values]
     }
     .flatten()
-    .unique().view()
+    .unique()
     .collectFile(name: 'final_metadata.csv', newLine: true, storeDir: 'results/', sort: false)
 
     }
