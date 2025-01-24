@@ -31,7 +31,7 @@ process RUNKRAKEN2 {
 
     publishDir "results/kraken2", pattern: "*_krakenReport.txt", mode: 'copy', overwrite: false
     
-    tag "Kraken on $meta.name"
+    tag "Kraken on $meta.species_name"
 
     input:
     tuple path(reads_combined), val(meta)
@@ -48,16 +48,16 @@ process RUNKRAKEN2 {
         --threads ${task.cpus} \
         --gzip-compressed \
         --minimum-hit-groups 1 \
-        --output ${meta.name}_krakenReport.txt \
+        --output ${meta.species_name}_krakenReport.txt \
         ${reads_combined}
 
-        awk -F'\\t' -v taxID="${meta.taxid}" '\$1 == "C" && \$3 == taxID {print \$2}' ${meta.name}_krakenReport.txt > ${meta.name}_ids.txt.temp
+        awk -F'\\t' -v taxID="${meta.species_taxid}" '\$1 == "C" && \$3 == taxid {print \$2}' ${meta.species_name}_krakenReport.txt > ${meta.species_name}_ids.txt.temp
 
     # Only move the tmp file to the final location if it's not empty
-    if [ -s ${meta.name}_ids.txt.temp ]; then
-        mv ${meta.name}_ids.txt.temp ${meta.name}_ids.txt
+    if [ -s ${meta.species_name}_ids.txt.temp ]; then
+        mv ${meta.species_name}_ids.txt.temp ${meta.species_name}_ids.txt
     else
-        echo "${meta.name}_ids.txt.temp is empty. No file will be outputted."
+        echo "${meta.species_name}_ids.txt.temp is empty. No file will be outputted."
         # We simply don't create the output file, leading to "nothing" being emitted.
     fi
     """
@@ -77,12 +77,12 @@ process SUBSET_FASTQ {
     tuple path(reads), path(virus_ids), val(meta)
 
     output:
-    tuple path("${meta.name}.fastq.gz"), val(meta)
+    tuple path("${meta.species_name}.fastq.gz"), val(meta)
 
     script:
     """
-    seqtk subseq ${reads} ${virus_ids} > ${meta.name}.fastq
-    pigz -p ${task.cpus} ${meta.name}.fastq
+    seqtk subseq ${reads} ${virus_ids} > ${meta.species_name}.fastq
+    pigz -p ${task.cpus} ${meta.species_name}.fastq
     """
 
 }
@@ -108,9 +108,9 @@ process RETRIEVE_GENOMEREFS {
 
     script:
     """
-    genome_retriever.py --taxon_id ${meta.taxid} --name ${meta.name} -o .
+    genome_retriever.py --taxon_id ${meta.species_taxid} --name ${meta.species_name} -o .
     
-    awk -v add="${meta.taxid}_" '/^>/ {print ">" add substr(\$0, 2); next} {print}' *.fna > ${meta.name}.fasta
+    awk -v add="${meta.species_taxid}_" '/^>/ {print ">" add substr(\$0, 2); next} {print}' *.fna > ${meta.species_name}.fasta
     """
 }
 
@@ -161,7 +161,7 @@ process MAP_READS {
     """
     minimap2 -ax map-ont -t ${task.cpus} ${fasta} ${subsetted_fastq} > mapped.sam
     samtools view -@ ${task.cpus} -b mapped.sam -o mapped.bam
-    samtools sort -l 0 -m 1G -O BAM -@ ${task.cpus} mapped.bam -o ${meta.name}_${meta.taxid}.sorted.bam
+    samtools sort -l 0 -m 1G -O BAM -@ ${task.cpus} mapped.bam -o ${meta.species_name}_${meta.species_taxid}.sorted.bam
     """
 
 }
@@ -183,8 +183,8 @@ process BAM_PROCESSING {
 
     script:
     """
-    samtools markdup -r -@ ${task.cpus} ${bam_sorted} ${meta.name}.sorted.dedup.bam
-    samtools index ${meta.name}.sorted.dedup.bam
+    samtools markdup -r -@ ${task.cpus} ${bam_sorted} ${meta.species_name}.sorted.dedup.bam
+    samtools index ${meta.species_name}.sorted.dedup.bam
     """
 
 }
@@ -212,8 +212,8 @@ process MAPPING_STATS_ALL {
 
     script:
     """
-    samtools flagstat ${bam_dedup} > ${meta.name}.flagstat.txt
-    samtools idxstats ${bam_dedup} > ${meta.name}.idxstats.txt
+    samtools flagstat ${bam_dedup} > ${meta.species_name}.flagstat.txt
+    samtools idxstats ${bam_dedup} > ${meta.species_name}.idxstats.txt
     """
 }
 
@@ -244,16 +244,16 @@ process EXTRACT_READIDS {
     # extract the correct region name. 
 
     REGION=\$(samtools view -h ${bam_dedup} | \
-    grep "^@SQ" | grep "${meta.taxid}" | cut -f2 | sed 's/SN://g')
+    grep "^@SQ" | grep "${meta.species_taxid}" | cut -f2 | sed 's/SN://g')
 
     # use REGION to filter bam wile retaining header
     
-    samtools view -b -h -F 256 -F 4 ${bam_dedup} -o ${meta.taxid}_${meta.name}_filtered.bam \$REGION
-    samtools view ${meta.taxid}_${meta.name}_filtered.bam | cut -f 1 > ${meta.taxid}_${meta.name}_final_read_ids.txt
+    samtools view -b -h -F 256 -F 4 ${bam_dedup} -o ${meta.species_taxid}_${meta.species_name}_filtered.bam \$REGION
+    samtools view ${meta.species_taxid}_${meta.species_name}_filtered.bam | cut -f 1 > ${meta.species_taxid}_${meta.species_name}_final_read_ids.txt
     
     # make final fastq with true positives from bam to be pulished 
-    samtools fastq -@ ${task.cpus} ${meta.taxid}_${meta.name}_filtered.bam > ${meta.taxid}_${meta.name}.fastq
-    pigz -p ${task.cpus} ${meta.taxid}_${meta.name}.fastq
+    samtools fastq -@ ${task.cpus} ${meta.species_taxid}_${meta.species_name}_filtered.bam > ${meta.species_taxid}_${meta.species_name}.fastq
+    pigz -p ${task.cpus} ${meta.species_taxid}_${meta.species_name}.fastq
     """
 }
 
@@ -277,7 +277,7 @@ process SAMTOOLS_DEPTH {
     
     script:
     """
-    samtools depth -aa ${filtered_bam} | grep "${meta.taxid}_" | sed 's/^/${meta.name}_/' > ${meta.taxid}_${meta.name}.depth
+    samtools depth -aa ${filtered_bam} | grep "${meta.species_taxid}_" | sed 's/^/${meta.species_name}_/' > ${meta.species_taxid}_${meta.species_name}.depth
     """
 
 }
@@ -330,10 +330,10 @@ process SUBSET_POD5 {
     # Check if there are any subfolders 
     if find ${pod5_reads} -mindepth 1 -type d | read; then
         # Subfolders are present, run this command
-        pod5 filter ${pod5_reads}/${meta.folder} --output ${meta.taxid}_${meta.name}.filtered.pod5 --ids ${virus_ids} --missing-ok
+        pod5 filter ${pod5_reads}/${meta.folder} --output ${meta.species_taxid}_${meta.species_name}.filtered.pod5 --ids ${virus_ids} --missing-ok
     else
         # No subfolders present, just query all files
-        pod5 filter ${pod5_reads} --output ${meta.taxid}_${meta.name}.filtered.pod5 --ids ${virus_ids} --missing-ok
+        pod5 filter ${pod5_reads} --output ${meta.species_taxid}_${meta.species_name}.filtered.pod5 --ids ${virus_ids} --missing-ok
     fi
 
     """

@@ -45,16 +45,16 @@ workflow {
                         .map { row ->
                             meta = [
                                 folder: "${row.filename}",
-                                name: "${row.species_name}",
-                                taxid: "${row.pathogen_taxid}",
-                                year: "${row.year_of_isolation}",
-                                country: "${row.country_of_isolation}",
-                                ori: "${row.geographic_origin}",
-                                strain: "${row.strain_lineage}",
-                                source: "${row.source_id}",
-                                host: "${row.host_ncbi_taxid}",
-                                labid: "${row.internal_lab_id}",
-                                diagMethod: "${row.diagnostic_method_id}",
+                                species_name: "${row.species_name}",
+                                species_taxid: "${row.species_taxid}",
+                                year_of_isolation: "${row.year_of_isolation}",
+                                country_of_isolation: "${row.country_of_isolation}",
+                                geographic_origin: "${row.geographic_origin}",
+                                strain_lineage: "${row.strain_lineage}",
+                                source_id: "${row.source_id}",
+                                host_taxid: "${row.host_taxid}",
+                                internal_lab_id: "${row.internal_lab_id}",
+                                diagnostic_method_id: "${row.diagnostic_method_id}",
                                 remarks: "${row.remarks}"
                             ]
                         }
@@ -64,14 +64,14 @@ workflow {
                         .map { row ->
                             meta = [
                                 folder: row[0],
-                                name: row[1],
-                                taxid: row[2]
+                                species_name: row[1],
+                                species_taxid: row[2]
                             ]
                         }
                         // produces:
                             // val(meta)
                             // meta.folder
-                            // meta.name
+                            // meta.species_name
                             // meta.taxid
 
     concatenate_fastq_results = CONCATENATE_FASTQ(params.fastq_dir, ch_csv_lines)
