@@ -4,25 +4,31 @@ FROM continuumio/miniconda3 AS builder
 # Copy the environment YAML file into the container
 COPY squidpipe_env.yaml /tmp/environment.yml
 
-# Create the Conda environment and remove cache to save space
+# Create the Conda environment and remove unnecessary files to save space
 RUN conda env create -f /tmp/environment.yml && \
     conda clean --all --yes && \
     rm -rf /opt/conda/pkgs/* /root/.cache/pip
 
 # Stage 2: Create the final lightweight image
-FROM continuumio/miniconda3
+FROM debian:bullseye-slim
 
-# Copy the prepared Conda environment from the builder stage
-COPY --from=builder /opt/conda /opt/conda
+# Copy only the Conda environment from the builder stage
+COPY --from=builder /opt/conda/envs/squidpipe_env /opt/conda/envs/squidpipe_env
+
+# Install minimal dependencies required to run Conda
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        bzip2 \
+        ca-certificates \
+        wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set the PATH to include the Conda environment
-ENV PATH="/opt/conda/bin:$PATH"
+ENV PATH="/opt/conda/envs/squidpipe_env/bin:$PATH"
 
-# Initialize Conda and add environment activation to bashrc
-RUN conda init && echo "conda activate viral_metagenomics_env" >> ~/.bashrc
+# Set the default shell to bash
+SHELL ["/bin/bash", "-c"]
 
-# Use default shell (no need for exec bash in SHELL directive)
-SHELL ["bash", "-c"]
-
-# Start an interactive shell when container runs
-CMD ["bash"]
+# Directly activate the environment in the CMD step
+CMD ["conda activate squidpipe_env"]

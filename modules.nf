@@ -35,6 +35,7 @@ process RUNKRAKEN2 {
 
     input:
     tuple path(reads_combined), val(meta)
+    path kraken_database
 
     output:
     path "*_krakenReport.txt", emit: 'kraken_report'
@@ -44,7 +45,7 @@ process RUNKRAKEN2 {
     """
 
     kraken2 \
-        --db ${params.databases.kraken_db} \
+        --db ${kraken_database} \
         --threads ${task.cpus} \
         --gzip-compressed \
         --minimum-hit-groups 1 \
