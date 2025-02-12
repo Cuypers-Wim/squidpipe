@@ -39,7 +39,34 @@ Edit the nextflow.config file to point to your data directories and set any nece
 nextflow run squidpipe.nf 
 ```
 
-Running this pipeline generates a folder named `results`, which contains the following subdirectories:
+## Output
+
+Running this pipeline generates a `results` folder containing multiple the output files, and  subdirectories containing important intermediate output.
+
+### Output files
+
+- **`coverage_metrics.csv`**: Contains coverage statistics for each sample contig (entire genome or chromosome). Columns include:  
+  1. Contig name  
+  2. Read coverage (percentage of positions covered by at least one read)  
+  3. Depth of coverage (average number of reads covering a position)  
+  4. Percentage of positions with ≥10 reads  
+  5. Percentage of positions with ≥20 reads  
+  6. Percentage of positions with ≥30 reads  
+
+- **`final_metadata.csv`** *(optional)*: Generated if `csvMeta` is set to `true` and metadata is correctly provided. This file is intended for upload to SquiDBase and links POD5 files (column: `filename`) to metadata fields such as:  
+  - `species_name`  
+  - `species_taxid`  
+  - `year_of_isolation`  
+  - `country_of_isolation`  
+  - `geographic_origin`  
+  - `strain_lineage`  
+  - `source_id`  
+  - `host_taxid`  
+  - `internal_lab_id`  
+  - `diagnostic_method_id`  
+  - `remarks`  
+
+### Output directories
 
 - `mapping`: Contains mapping statistics and BAM files related to the read alignment and filtering processes.
 - `reads`: Contains the extracted reads in FASTQ format that correspond to the target species.
