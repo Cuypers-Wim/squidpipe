@@ -1,10 +1,11 @@
-# squidpipe: a viral metagenomics pipeline for squidbase
+# SquiDPipe: taxonomic classification and POD5 extraction pipeline for SquiDBase
 
 <div align="center">
   <img src="squidpipe.png" alt="Description of Image" width="300">
 </div>
 
-Nanopore sequencing generates POD5 files containing raw signal data. When dealing with multiplexed runs—where multiple species are sequenced on the same flowcell—you might need to extract only specific species from these files. In cases where a single barcode contains multiple species (e.g., human and Zika virus reads), sqidpipe allows you to isolate and create a new POD5 file containing only the raw nanopore data for your species of interest.
+## About
+Nanopore sequencing generates POD5 files containing raw signal data. When dealing with multiplexed runs—where multiple species are sequenced on the same flowcell, you will end up with a set of POD5 and FASTQ files per barcode. In cases where a single barcode contains multiple species (e.g., human and Zika virus reads), SquiDPipe allows you to isolate and create a new POD5 file containing only the raw nanopore data for your species of interest.
 
 This Nextflow pipeline automates this process by:
 
@@ -13,12 +14,13 @@ This Nextflow pipeline automates this process by:
 - Performing mapping and coverage analysis to validate the extracted data
 - Extracting the corresponding raw signal data from POD5 files
 
-SquiDpipe is specifically designed for microbial and viral sequencing applications, and was specifically developed to facilitate uploading your raw Nanopore data to S[SquiDBase](https://squidbase.org/). 
+SquiDpipe is specifically designed for microbial and viral sequencing applications, and was specifically developed to facilitate uploading your raw Nanopore data to [SquiDBase](https://squidbase.org/). 
 
-## Table of Contents
+## Table of contents
 - [Installation](#installation)
 - [Usage](#usage)
-- [Pipeline Processes](#about)
+- [Output](#output)
+- [CSV_file_specifications](#about_the_input_CSV_file)
 
 
 ## Installation
@@ -75,6 +77,7 @@ These options control the pipeline behavior:
 
 - **`csvMeta`** – If `true`, includes all metadata and generates an input file for Squidbase.  
   - Options: `true` or `false`  
+  - Read more about the structure of the CSV file in the section - [CSV file](#about-the-input-csv-file)
 - **`pod5_split`** – If `true`, generates subsetted POD5 files based on taxonomic classification.  
   - Options: `true` or `false`  
 
@@ -94,6 +97,8 @@ nextflow run main.nf
 ```
 
 ## Output
+
+The pipeline outputs mapping statistics for the reference genome or the best matching reference genome. Additionally, if requested, the pipeline generates POD5 files containing the raw nanopore signal data (the so-called "squiggles") specific to the identified species. These POD5 files can be further uploaded to SquiDBase.
 
 Running this pipeline generates a `results` folder containing multiple the output files, and  subdirectories containing important intermediate output.
 
@@ -127,26 +132,38 @@ Running this pipeline generates a `results` folder containing multiple the outpu
 - `references`: Stores the reference genomes used for mapping.
 - `POD5`: Includes POD5 files containing raw nanopore signal data ("squiggles") specific to the identified species.
 
-## About
+## About the input CSV file
 
-This pipeline is designed to process data generated from a nanopore sequencing run. Typically, such a run produces folders containing FASTQ and POD5 files, where each barcode folder may contain multiple subfolders with these files. The pipeline is particularly useful when you need to identify and analyze a specific species within a sample, such as the Chikungunya virus with NCBI taxon identifier 37124, expected to be found in barcode one.
+This pipeline is designed to process data generated from a nanopore sequencing run. Typically, such a run produces folders containing FASTQ and POD5 files, where each barcode folder may contain multiple read files. The pipeline is particularly useful when you need to identify and analyze a specific species within a sample, such as the Chikungunya virus with NCBI taxon identifier 37124, expected to be found in barcode one.
 
 To run the pipeline, you need to provide a CSV file that specifies the expected species and their corresponding NCBI taxon identifiers for each barcode. The pipeline uses this information to extract reads corresponding to the target species from each barcode folder. It then performs mapping to confirm the presence of the species and eliminate any false positives.
 
-The pipeline outputs mapping statistics for the reference genome or the best matching reference genome. Additionally, if required, the pipeline can generate POD5 files containing the raw nanopore signal data (the so-called "squiggles") specific to the identified species. These POD5 files can be further uploaded to platforms like Squidbase for detailed analysis.
-
 ###  Example input CSV file
 
-| Barcode   | Virus Name | Taxon ID |
-|-----------|------------|----------|
+#### Short version
+
+The CSV file required for SquiDPipe must include, at a minimum, the barcode folder (e.g., barcode01), the corresponding taxon name (e.g., CHIKV-1), and its taxonomic identifier (e.g., 37124). An example CSV file is shown below:
+
 | barcode01 | CHIKV-1    | 37124    |
 | barcode02 | Denv1-5    | 11053    |
 | barcode03 | Denv2-7    | 11060    |
 | barcode04 | Denv3-10   | 11069    |
 | barcode05 | EEEV-16    | 11021    |
 
+#### Long version including metadata
 
-### Descriptions of Key Processes:
+The full CSV format includes additional metadata. To use this option, the `csvMeta` option must be set to `true` in the NextFlow configuration file. An example CSV file is shown below:
+
+| filename  | species_name    | species_taxid | year_of_isolation | country_of_isolation | geographic_origin | strain_lineage | source_id | host_taxid | internal_lab_id | diagnostic_method_id | remarks         |
+|-----------|---------------|--------------|-------------------|---------------------|------------------|---------------|-----------|-----------|--------------|-------------------|----------------|
+| barcode01 | DENV          | 11053        | 2014              | NA                  | NA               | ECSA          | NA        | NA        | NA           | NA                | ITM collection |
+| barcode02 | HIV           | 11676        | 2015              | BE                  | NI               | ECSA          | NA        | NA        | NA           | NA                | ITM collection |
+| barcode03 | ZIKV          | 64320        | 2015              | BE                  | ID               | NA            | NA        | NA        | NA           | NA                | ITM collection |
+| barcode04 | SARS-CoV-2_A  | 2697049      | 2018              | BE                  | PE               | NA            | NA        | NA        | NA           | NA                | ITM collection |
+| barcode05 | SARS-CoV-2_B  | 2697049      | 2018              | BE                  | PE               | NA            | NA        | NA        | NA           | NA                | ITM collection |
+
+
+## Key pipeline processes:
 
 - `CONCATENATE_FASTQ`: Merges all FASTQ files in a barcode folder into a single FASTQ file for downstream analysis.
 - `RUNKRAKEN2`: Executes Kraken2 on the concatenated FASTQ files for taxonomic classification, generating reports and extracting read IDs.
@@ -159,9 +176,3 @@ The pipeline outputs mapping statistics for the reference genome or the best mat
 - `SAMTOOLS_DEPTH`: Computes the depth of coverage across the reference genomes using the filtered BAM files.
 - `DEPTH_OF_COVERAGE`: Analyzes the depth of coverage data to calculate coverage statistics, outputting the results in CSV format.
 - `SUBSET_POD5`: Filters POD5 files to retain only the raw signals/squiggles corresponding to the extracted read IDs.
-
-A graphic overview can be found here: 
-
-![image](https://github.com/user-attachments/assets/de9e3d25-ca98-4e91-b296-6755e1865b42)
-
-
