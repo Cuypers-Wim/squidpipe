@@ -50,3 +50,16 @@ conda activate squidpipe_env
 conda env export -n squidpipe_env > squidpipe_env.yaml
 
 I have rebuilt the docker container after this.
+
+## parameter validation
+
+
+- conda install nf-core
+- conda remove nf-core
+- pip install nf-core
+- nf-core pipelines schema build
+
+conda create --name nf-core python=3.12 nf-core nextflow
+conda activate nf-core
+
+nf-core pipelines schema build

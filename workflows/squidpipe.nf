@@ -22,23 +22,23 @@
 nextflow.enable.dsl=2
 
 // include 
+include { CONCATENATE_FASTQ                                                 } from '../modules.nf'
+include { RUNKRAKEN2                                                        } from '../modules.nf'
+include { SUBSET_FASTQ                                                      } from '../modules.nf'
+include { RETRIEVE_GENOMEREFS                                               } from '../modules.nf'
+include { DEDUPLICATE_REFERENCE                                             } from '../modules.nf'
+include { MAP_READS                                                         } from '../modules.nf'
+include { BAM_PROCESSING                                                    } from '../modules.nf'
+include { MAPPING_STATS_ALL                                                 } from '../modules.nf'
+include { EXTRACT_READIDS                                                   } from '../modules.nf'
+include { SAMTOOLS_DEPTH                                                    } from '../modules.nf'
+include { DEPTH_OF_COVERAGE                                                 } from '../modules.nf'
+include { SUBSET_POD5                                                       } from '../modules.nf'
 
-include { CONCATENATE_FASTQ     } from './modules.nf'
-include { RUNKRAKEN2            } from './modules.nf'
-include { SUBSET_FASTQ          } from './modules.nf'
-include { RETRIEVE_GENOMEREFS   } from './modules.nf'
-include { DEDUPLICATE_REFERENCE } from './modules.nf'
-include { MAP_READS             } from './modules.nf'
-include { BAM_PROCESSING        } from './modules.nf'
-include { MAPPING_STATS_ALL     } from './modules.nf'
-include { EXTRACT_READIDS       } from './modules.nf'
-include { SAMTOOLS_DEPTH        } from './modules.nf'
-include { DEPTH_OF_COVERAGE     } from './modules.nf'
-include { SUBSET_POD5           } from './modules.nf'
 
-// workflow
 
-workflow {
+workflow SQUIDPIPE {
+
     if( params.csvMeta )
         ch_csv_lines = Channel.fromPath(params.csv_file)
                         .splitCsv(header: true, sep: ";")
