@@ -14,32 +14,36 @@ This Nextflow pipeline automates this process by:
 - Performing mapping and coverage analysis to validate the extracted data
 - Extracting the corresponding raw signal data from POD5 files
 
+Each step performed by the pipeline is explained at the end of this README under [Key pipeline processes](#key-pipeline-processes). 
+
 SquiDpipe is specifically designed for microbial and viral sequencing applications, and was specifically developed to facilitate uploading your raw Nanopore data to [SquiDBase](https://squidbase.org/). 
 
 ## Table of contents
 - [Installation](#installation)
 - [Usage](#usage)
 - [Output](#output)
-- [CSV_file_specifications](#about_the_input_CSV_file)
+- [CSV_file_specifications](#about-the-input-csv-file)
+- [Key pipeline processes](#key-pipeline-processes)
+- [Acknowledgements](#key-pipeline-processes)
 
 
 ## Installation
 
-You will need to install [Nextflow](https://www.nextflow.io/docs/latest/index.html) to run the pipeline.
+1. Install [Nextflow](https://www.nextflow.io/docs/latest/index.html) to run the pipeline.
 
-Then, you'll need to clone this repository:
+2. Clone this repository:
 ```bash
 git clone https://github.com/Cuypers-Wim/squidpipe.git
 cd squidpipe
 ```
 
-Next, you need to configure the pipeline by editing the `nextflow.config` file to select from which environment you whish to run the pipeline.
+3. Configure the pipeline by editing the `nextflow.config` file to select from which environment you whish to run the pipeline.
 
 ### Evironment settings
 
 - Run using Conda: set `conda.enabled = true`
 - Run using Docker: set `docker.enabled = true`
-- Apptainer is enabled: set `apptainer.enabled = true`
+- Run using Apptainer: set `apptainer.enabled = true`
 
 Note that if you do not whish to use the above options, you can install the following dependencies:
 
@@ -176,3 +180,9 @@ The full CSV format includes additional metadata. To use this option, the `csvMe
 - `SAMTOOLS_DEPTH`: Computes the depth of coverage across the reference genomes using the filtered BAM files.
 - `DEPTH_OF_COVERAGE`: Analyzes the depth of coverage data to calculate coverage statistics, outputting the results in CSV format.
 - `SUBSET_POD5`: Filters POD5 files to retain only the raw signals/squiggles corresponding to the extracted read IDs.
+
+
+## Citation  
+
+A publication is currently in preparation. In the meantime, please cite the SquiDBase [poster presentation](https://f1000research.com/posters/13-1157).
+

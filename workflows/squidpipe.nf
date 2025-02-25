@@ -145,12 +145,4 @@ workflow SQUIDPIPE {
 
     }
 
-}       
-
-// ToDo
-//
-// final metadatacsv file should consist of pod5 filename and all metadata
-//
-// Switch to nf-core modules - better for portability
-// docker - apptainer
-// Make a nice schema for visual depiction of the pipeline, or print the DAG?
+}
