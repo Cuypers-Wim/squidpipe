@@ -4,7 +4,16 @@
   <img src="squidpipe.png" alt="Description of Image" width="300">
 </div>
 
-This repository contains a Nextflow pipeline for processing FASTQ files, running Kraken2 for taxonomic classification, extracting relevant reads, and performing mapping and coverage analysis. The pipeline is designed for multiplexed nanopore runs, specifically tailored for viral detection.
+Nanopore sequencing generates POD5 files containing raw signal data. When dealing with multiplexed runs—where multiple species are sequenced on the same flowcell—you might need to extract only specific species from these files. In cases where a single barcode contains multiple species (e.g., human and Zika virus reads), sqidpipe allows you to isolate and create a new POD5 file containing only the raw nanopore data for your species of interest.
+
+This Nextflow pipeline automates this process by:
+
+- Running Kraken2 for taxonomic classification on FASTQ files
+- Identifying reads that match a specified taxonomic identifier
+- Performing mapping and coverage analysis to validate the extracted data
+- Extracting the corresponding raw signal data from POD5 files
+
+SquiDpipe is specifically designed for microbial and viral sequencing applications, and was specifically developed to facilitate uploading your raw Nanopore data to S[SquiDBase](https://squidbase.org/). 
 
 ## Table of Contents
 - [Installation](#installation)
@@ -14,29 +23,74 @@ This repository contains a Nextflow pipeline for processing FASTQ files, running
 
 ## Installation
 
-### Prerequisites
-- [Nextflow](https://www.nextflow.io/)
-- [Conda](https://docs.conda.io/en/latest/)
-- [Kraken2](https://ccb.jhu.edu/software/kraken2/)
-- [seqtk](https://github.com/lh3/seqtk)
-- [minimap2](https://github.com/lh3/minimap2)
-- [samtools](http://www.htslib.org/)
-- [pandas](https://pandas.pydata.org/)
+You will need to install [Nextflow](https://www.nextflow.io/docs/latest/index.html) to run the pipeline.
 
-Note that this software does not need to be installed when running the pipeline with the default conda option; an `vmp_env.yaml` has been provided to run the pipeline.
-
-### Clone the Repository
+Then, you'll need to clone this repository:
 ```bash
 git clone https://github.com/Cuypers-Wim/squidpipe.git
 cd squidpipe
 ```
 
-### Configure the Pipeline
-Edit the nextflow.config file to point to your data directories and set any necessary parameters.
+Next, you need to configure the pipeline by editing the `nextflow.config` file to select from which environment you whish to run the pipeline.
+
+### Evironment settings
+
+- Run using Conda: set `conda.enabled = true`
+- Run using Docker: set `docker.enabled = true`
+- Apptainer is enabled: set `apptainer.enabled = true`
+
+Note that if you do not whish to use the above options, you can install the following dependencies:
+
+- [Conda](https://docs.conda.io/en/latest/)
+- [h5py](https://www.h5py.org/)
+- [Kraken2](https://ccb.jhu.edu/software/kraken2/)
+- [minimap2](https://github.com/lh3/minimap2)
+- [ncbi-datasets-cli](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/command-line-tools/download-and-install/)
+- [pandas](https://pandas.pydata.org/)
+- [pigz](https://zlib.net/pigz/)
+- [pod5](https://github.com/nanoporetech/pod5-file-format)
+- [samtools](http://www.htslib.org/)
+- [seqkit](https://bioinf.shenwei.me/seqkit/)
+- [seqtk](https://github.com/lh3/seqtk)
+- [vbz-h5py-plugin](https://github.com/nanoporetech/vbz-h5py-plugin)
 
 ## Usage 
+
+Before running **SquiDPipe**, you need to set the required parameters. The easiest way to do this is by modifying the `nextflow.config` file. Below are the key parameters that should be adjusted based on your dataset and computing environment.  
+
+### Required Parameters  
+
+#### Input Files and Directories  
+These parameters specify the locations of input data:  
+
+- **`csv_file`** – Path to the CSV file containing metadata and sample information.  
+  - Example: `'full.csv'`  
+- **`fastq_dir`** – Directory containing FASTQ files used for taxonomic classification.  
+  - Example: `'data/fastq'`  
+- **`pod5_dir`** – Directory containing POD5 files with raw nanopore signals.  
+  - Example: `'data/pod5'`  
+
+#### Processing Options  
+These options control the pipeline behavior:  
+
+- **`csvMeta`** – If `true`, includes all metadata and generates an input file for Squidbase.  
+  - Options: `true` or `false`  
+- **`pod5_split`** – If `true`, generates subsetted POD5 files based on taxonomic classification.  
+  - Options: `true` or `false`  
+
+#### Database Configuration  
+The pipeline requires a Kraken2 database for taxonomic classification:  
+- **`kraken_db`** – Path to the Kraken2 database.  
+  - Example: `'/home/the_darwim/databases/kraken2/refseq_virus'`  
+
+In addition, you need to specify which reference genomes need to be included in addition to already specified taxonomic identifiers. For example, if you're mapping data originating from a human patient containing both virus and human reads, you want to include the human reference genome to improve the quality of SquiDPipe's mapping step:
+- **`references`** – Path to the reference genome file (if needed for downstream analysis).  
+  - Example: `'/some_location/GCF_000001405.40_GRCh38.p14_genomic.fna'`  
+
+### Running the pipeline
+
 ```bash
-nextflow run squidpipe.nf 
+nextflow run main.nf 
 ```
 
 ## Output
