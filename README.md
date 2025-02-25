@@ -162,11 +162,11 @@ The full CSV format includes additional metadata. To use this option, the `csvMe
 
 | filename  | species_name    | species_taxid | year_of_isolation | country_of_isolation | geographic_origin | strain_lineage | source_id | host_taxid | internal_lab_id | diagnostic_method_id | remarks         |
 |-----------|---------------|--------------|-------------------|---------------------|------------------|---------------|-----------|-----------|--------------|-------------------|----------------|
-| barcode01 | DENV          | 11053        | 2014              | NA                  | NA               | ECSA          | NA        | NA        | NA           | NA                | ITM collection |
-| barcode02 | HIV           | 11676        | 2015              | BE                  | NI               | ECSA          | NA        | NA        | NA           | NA                | ITM collection |
-| barcode03 | ZIKV          | 64320        | 2015              | BE                  | ID               | NA            | NA        | NA        | NA           | NA                | ITM collection |
-| barcode04 | SARS-CoV-2_A  | 2697049      | 2018              | BE                  | PE               | NA            | NA        | NA        | NA           | NA                | ITM collection |
-| barcode05 | SARS-CoV-2_B  | 2697049      | 2018              | BE                  | PE               | NA            | NA        | NA        | NA           | NA                | ITM collection |
+| barcode01 | DENV          | 11053        | 2014              | NA                  | NA               | ECSA          | NA        | NA        | NA           | NA                | Collection from Institute A |
+| barcode02 | HIV           | 11676        | 2015              | BE                  | NI               | ECSA          | NA        | NA        | NA           | NA                | Collection from Institute A |
+| barcode03 | ZIKV          | 64320        | 2015              | BE                  | ID               | NA            | NA        | NA        | NA           | NA                | Collection from Institute A |
+| barcode04 | SARS-CoV-2_A  | 2697049      | 2018              | BE                  | PE               | NA            | NA        | NA        | NA           | NA                | Collection from Institute A |
+| barcode05 | SARS-CoV-2_B  | 2697049      | 2018              | BE                  | PE               | NA            | NA        | NA        | NA           | NA                | Collection from Institute A |
 
 
 ## Key pipeline processes:
