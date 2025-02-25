@@ -147,12 +147,14 @@ To run the pipeline, you need to provide a CSV file that specifies the expected 
 #### Short version
 
 The CSV file required for SquiDPipe must include, at a minimum, the barcode folder (e.g., barcode01), the corresponding taxon name (e.g., CHIKV-1), and its taxonomic identifier (e.g., 37124). An example CSV file is shown below:
+|           |           |          |
+|-----------|-----------|----------|
+| barcode01 | CHIKV-1   | 37124    |
+| barcode02 | Denv1-5   | 11053    |
+| barcode03 | Denv2-7   | 11060    |
+| barcode04 | Denv3-10  | 11069    |
+| barcode05 | EEEV-16   | 11021    |
 
-| barcode01 | CHIKV-1    | 37124    |
-| barcode02 | Denv1-5    | 11053    |
-| barcode03 | Denv2-7    | 11060    |
-| barcode04 | Denv3-10   | 11069    |
-| barcode05 | EEEV-16    | 11021    |
 
 #### Long version including metadata
 
